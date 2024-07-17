@@ -11,8 +11,8 @@ add_page_title()
 # and icons should be
 show_pages(
     [
-        Page("step1.py", "Enter your details", "🏠"),
-        Page("pages/step2.py", "Create Me", "🧑‍🍳"),
-        Page("pages/step3.py", "Chat With Me", "🤖")
+        Page("STEP1.py", "Enter your details", "🏠"),
+        Page("pages/STEP2.py", "Create Me", "🧑‍🍳"),
+        Page("pages/STEP3.py", "Chat With Me", "🤖")
     ]
 )
