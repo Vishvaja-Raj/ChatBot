@@ -3,6 +3,7 @@ import requests
 import time
 did_api_key = st.secrets["did_api_key"]  # Ensure you have this secret defined in Streamlit secrets
 placeholder = st.empty()
+from utilities import logo
 # Function to generate video based on the prompt and avatar selection
 def generate_video(text, image_url, gender):
     print("Hello")
@@ -105,6 +106,7 @@ def video_show(uploaded_image_url, user_input):
         video_url = None
         video_url = generate_video(text, img_url, "Male")
         if video_url:
+            logo()
             container_id = "video_container"
             video_html = f"""
             <h1> Chat with me </h1>
