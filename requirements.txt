@@ -153,3 +153,6 @@ streamlit-extras
 firebase-admin
 google-cloud-firestore
 st-pages
+opencv-python
+fer
+scipy

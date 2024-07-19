@@ -13,6 +13,7 @@ show_pages(
     [
         Page("STEP1.py", "Enter your details", "🏠"),
         Page("pages/STEP2.py", "Create Me", "🧑‍🍳"),
-        Page("pages/STEP3.py", "Chat With Me", "🤖")
+        Page("pages/STEP3.py", "Chat With Me", "🤖"),
+        Page("pages/STEP4.py", "Click a Photo","📸")
     ]
 )
