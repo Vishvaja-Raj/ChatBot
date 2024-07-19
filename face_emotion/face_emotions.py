@@ -8,7 +8,7 @@ import io
 model = load_model('model.h5')
 
 # Emotion labels
-emotion_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
+emotion_labels = ['Angry','Disgust','Fear','Happy','Neutral', 'Sad', 'Surprise']
 
 def face_emotion_detection():
     # Load pre-trained model
