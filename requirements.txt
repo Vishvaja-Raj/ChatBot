@@ -155,4 +155,5 @@ google-cloud-firestore
 st-pages
 opencv-python
 fer
-scipy
+tensorflow
+keras
