@@ -25,6 +25,7 @@ if st.button("Next"):
     st.session_state.step = 'conversation'
     du.update_user_data(
                 name=st.session_state['user_data']['name'],
+                bot_name = st.session_state['user_data']['bot_name'],
                 preferences=st.session_state['user_data']['preferences'],
                 imgur_link=st.session_state['user_data']['imgur_link']
             )

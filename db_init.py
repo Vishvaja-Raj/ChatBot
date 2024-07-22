@@ -32,6 +32,7 @@ def init_user_data():
     if 'user_data' not in st.session_state:
         st.session_state['user_data'] = {
             'name': '',
+            'bot_name': '',
             'preferences': '',
             'camera_permission': False,
             'imgur_link': ''

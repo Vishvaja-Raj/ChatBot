@@ -75,6 +75,8 @@ def load_conversation():
             # Restore user data if available
             if 'name' in st.session_state['user_data'] and st.session_state['user_data']['name']:
                 st.session_state.entity_memory.save_context({"input": "My name is " + st.session_state['user_data']['name']}, {"output": "Nice to meet you, " + st.session_state['user_data']['name']})
+            if 'bot_name' in st.session_state['user_data'] and st.session_state['user_data']['bot_name']:
+                st.session_state.entity_memory.save_context({"input": "The name of the bot or you is " + st.session_state['user_data']['bot_name']}, {"output": "I am , " + st.session_state['user_data']['bot_name']})
 
             if 'preferences' in st.session_state['user_data'] and st.session_state['user_data']['preferences']:
                 st.session_state.entity_memory.save_context({"input": "My preferences are " + st.session_state['user_data']['preferences']}, {"output": "I'll remember that you like " + st.session_state['user_data']['preferences']})
@@ -114,6 +116,9 @@ def conversation_bot(Conversation):
                 if "my name is" in user_input_speech.lower() and len(user_input_speech.split()) > 3:
                     name = user_input_speech.split("my name is")[1].strip()
                     du.update_user_data(name=name)
+                if "your name is" in user_input_speech.lower() and len(user_input_speech.split()) > 3:
+                    bot_name = user_input_speech.split("your name is")[1].strip()
+                    du.update_user_data(bot_name=bot_name)
 
                 if "i like" in user_input_speech.lower():
                     split_input = user_input_speech.lower().split("i like")
@@ -144,6 +149,7 @@ def chatbot_text_interface(Conversation):
     user_input_text = st.text_input("You: ", "", key="input_text")
 
     if user_input_text:
+        st.write()
         # Run conversation with the text input
         output = Conversation.run(input=user_input_text)
         st.session_state.past.append(user_input_text)

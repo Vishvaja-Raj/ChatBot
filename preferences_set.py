@@ -9,6 +9,7 @@ def initialize_session_state_from_db():
     if user_data:
         st.session_state['user_data'] = {
             'name': user_data.get('name', ''),
+            'bot_name': user_data.get('bot_name', ''),
             'preferences': user_data.get('preferences', ''),
             'camera_permission': False,  # Set default values for other session state variables if needed
             'imgur_link': ''
@@ -34,6 +35,7 @@ def initialise_session_state():
     if 'user_data' not in st.session_state:
         st.session_state['user_data'] = {
             'name': None,
+            'bot_name': None,
             'preferences': None,
             'camera_permission': False,
             'imgur_link': None,
@@ -48,7 +50,9 @@ def preferences_setting(user_input, output):
     if "my name is" in user_input.lower() and len(user_input.split()) > 3:
         name = user_input.split("my name is")[1].strip()
         du.update_user_data(name=name)
-
+    if "my bot name is" in user_input.lower() and len(user_input.split()) > 3:
+        bot_name = user_input.split("my bot name is")[1].strip()
+        du.update_user_data(bot_name=bot_name)
     if "i like" in user_input.lower():
         preferences = user_input.split("i like")[1].strip()
         du.update_user_data(preferences=preferences)

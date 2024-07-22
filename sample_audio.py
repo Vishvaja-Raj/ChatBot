@@ -28,6 +28,7 @@ if 'camera_open' not in st.session_state:
 if 'user_data' not in st.session_state:
     st.session_state['user_data'] = {
         'name': None,
+        'bot_name': None,
         'preferences': None,
         'camera_permission': False
     }
@@ -60,8 +61,9 @@ def get_conversation_history(session_id):
     conn.close()
     return history
 
-def update_user_data(name=None, preferences=None, camera_permission=False):
+def update_user_data(name=None,bot_name=None, preferences=None, camera_permission=False):
     st.session_state['user_data']['name'] = name
+    st.session_state['user_data']['bot_name'] = bot_name
     st.session_state['user_data']['preferences'] = preferences
     st.session_state['user_data']['camera_permission'] = camera_permission
 

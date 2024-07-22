@@ -39,10 +39,11 @@ def get_conversation_history(name):
     return history
 
 # Function to update user data in Firestore
-def update_user_data(name, preferences, imgur_link, camera_permission=None):
+def update_user_data(name,bot_name, preferences, imgur_link, camera_permission=None):
     doc_ref = db.collection('memory').document(name)
     user_data = {
         'name': name,
+        'bot_name': bot_name,
         'preferences': preferences,
         'imgur_link': imgur_link,
         'camera_permission': camera_permission,
@@ -60,6 +61,7 @@ def get_user_data():
             print("User Data Retrieved: " + str(user_data))
             return {
                 'name': user_data.get('name', ''),
+                'bot_name': user_data.get('bot_name', ''),
                 'preferences': user_data.get('preferences', ''),
                 'camera_permission': user_data.get('camera_permission', False),
                 'imgur_link': user_data.get('imgur_link', '')

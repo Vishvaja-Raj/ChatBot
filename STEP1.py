@@ -25,17 +25,27 @@ if name:
     st.session_state['user_data']['name'] = name
     st.success(f"Hello {name}!")
 
-    
-st.subheader("Please enter your preferences:")
+st.subheader("What would you like to call your bot?")
+
+#sb.text_to_speech("Please enter your name")
+bot_name = st.text_input("Bot Name:")
+if bot_name:
+    st.session_state['user_data']['bot_name'] = bot_name
+    st.success(f"Hello I am {bot_name}!")
+
+        
+st.subheader("Please enter your common preferences:")
 #sb.text_to_speech("Please enter your preferences")
-preferences = sb.speech_to_text()
+#Enable if you want speech to text
+#preferences = sb.speech_to_text()
+preferences = st.text_input("Preferences:")
 if preferences:
     st.session_state['user_data']['preferences'] = preferences
     st.success(f"Preferences noted: {preferences}")
 
             
 
-if st.session_state['user_data']['name'] and st.session_state['user_data']['preferences']:
+if st.session_state['user_data']['name'] and st.session_state['user_data']['preferences'] and st.session_state['user_data']['bot_name']:
     print("here session1")
     if st.button("Submit"):
         print("here session")
