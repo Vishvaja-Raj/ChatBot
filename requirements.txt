@@ -161,4 +161,4 @@ textblob
 bcrypt
 cmake
 dlib
-face-recognition
+face_recognition
