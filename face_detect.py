@@ -44,7 +44,7 @@ def compare_faces(known_face_encodings, known_face_names, unknown_image_path):
                         st.success("Password correct! Access granted.")
                         st.session_state.logged_in = True
                         sleep(0.5)
-                        st.switch_page("pages/step1.py")
+                        st.switch_page("pages/STEP1.py")
                     else:
                         st.error("Incorrect password. Access denied.")
                 return  # Exit the function after processing the first match
