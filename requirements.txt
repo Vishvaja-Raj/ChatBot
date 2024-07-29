@@ -159,3 +159,6 @@ tensorflow
 keras
 textblob
 bcrypt
+dlib
+wheel
+face-recognition
