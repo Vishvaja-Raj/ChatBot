@@ -159,6 +159,6 @@ tensorflow
 keras
 textblob
 bcrypt
+cmake
 dlib
-wheel
 face-recognition
