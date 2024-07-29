@@ -160,5 +160,5 @@ keras
 textblob
 bcrypt
 cmake
-dlib
+dlib-bin
 face_recognition
