@@ -4,11 +4,10 @@ import os
 import time
 import companion_building as cb
 import video_generation as vg
-from streamlit_extras.switch_page_button import switch_page
 import db_init as di
-from utilities import logo
+from utilities import make_sidebar
 
-logo()
+make_sidebar()
 
 value=0
 # Initialize session state
@@ -55,6 +54,6 @@ if st.session_state['user_data']['name'] and st.session_state['user_data']['pref
         #     preferences=st.session_state['user_data']['preferences']
         # )
         print("here session2")
-        switch_page('Create Me')
+        st.switch_page('Create Me')
 
 

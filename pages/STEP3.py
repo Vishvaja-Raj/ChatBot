@@ -3,9 +3,9 @@ import speech_building as sb
 import database_updates as du
 import preferences_set as ps
 import db_init as di
-from utilities import logo
+from utilities import make_sidebar
 
-logo()
+make_sidebar()
 # Load conversation chain
 di.init_user_data()
 # Ensure the session state for input and show_past is initialized

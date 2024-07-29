@@ -4,7 +4,7 @@ import streamlit as st
 import json
 import db_init as di
 from datetime import datetime
-
+import bcrypt
 db = di.init_db()
 
 def get_next_conversation_id():
@@ -31,6 +31,60 @@ def insert_conversation(name, message, response):
         'response': response,
         'timestamp': datetime.utcnow()  # Add a timestamp
     })
+
+def create_user(name, password):
+    """
+    Creates a new user document in the Firestore `users` collection.
+    
+    Args:
+        username (str): The user's username.
+        name (str): The user's full name.
+        password (str): The user's plain text password.
+
+    Returns:
+        None
+    """
+    # Hash the password
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    
+    # Create the user document
+    user_doc_ref = db.collection('users').document(name)
+    user_doc_ref.set({
+        'name': name,
+        'password': hashed_password.decode('utf-8'),  # Store the hashed password as a string
+        'timestamp': datetime.utcnow()  # Add timestamp
+    })
+
+def check_user_credentials(name, password):
+    """
+    Checks if the provided username and password match the stored credentials in Firestore.
+    
+    Args:
+        username (str): The user's username.
+        password (str): The user's plain text password.
+
+    Returns:
+        bool: True if credentials are valid, False otherwise.
+    """
+    try:
+        # Fetch the user document
+        user_doc_ref = db.collection('users').document(name)
+        user_doc = user_doc_ref.get()
+
+        if user_doc.exists:
+            user_data = user_doc.to_dict()
+            stored_hashed_password = user_data.get('password', '')
+
+            # Verify the password
+            if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
+                return True
+            else:
+                return False
+        else:
+            return False
+    except Exception as e:
+        print(f"Error checking user credentials: {e}")
+        return False
 
 # Function to retrieve conversation history for a given name
 def get_conversation_history(name):

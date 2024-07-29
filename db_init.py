@@ -2,7 +2,9 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import json
 import streamlit as st
-
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Global variable for Firestore database client
 db = None
 

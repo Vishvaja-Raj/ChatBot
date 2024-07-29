@@ -11,10 +11,9 @@ import speech_building as sb
 import companion_building as cb
 
 import video_generation as vg
-from streamlit_extras.switch_page_button import switch_page
-from utilities import logo
+from utilities import make_sidebar
 
-logo()
+make_sidebar()
 
 st.title("Upload an Image")
 image_url = cb.image_upload()
@@ -30,6 +29,6 @@ if st.button("Next"):
                 imgur_link=st.session_state['user_data']['imgur_link']
             )
     print("USER DATA"+str(st.session_state['user_data']))
-    switch_page('Chat With Me')
+    st.switch_page('Chat With Me')
 
 

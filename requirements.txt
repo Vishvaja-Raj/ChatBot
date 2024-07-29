@@ -158,3 +158,4 @@ fer
 tensorflow
 keras
 textblob
+bcrypt
