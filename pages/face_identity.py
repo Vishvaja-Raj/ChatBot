@@ -1,9 +1,6 @@
 import streamlit as st
-import face_recognition
-import numpy as np
 import os
 from PIL import Image
-import cv2
 import io
 import face_detect as fd
 
