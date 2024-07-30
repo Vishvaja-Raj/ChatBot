@@ -54,6 +54,6 @@ if st.session_state['user_data']['name'] and st.session_state['user_data']['pref
         #     preferences=st.session_state['user_data']['preferences']
         # )
         print("here session2")
-        st.switch_page('Create Me')
+        st.switch_page('pages/STEP2.py')
 
 

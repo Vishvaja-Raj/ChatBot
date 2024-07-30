@@ -29,6 +29,6 @@ if st.button("Next"):
                 imgur_link=st.session_state['user_data']['imgur_link']
             )
     print("USER DATA"+str(st.session_state['user_data']))
-    st.switch_page('Chat With Me')
+    st.switch_page('pages/STEP3.py')
 
 
