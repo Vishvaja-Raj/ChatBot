@@ -145,8 +145,13 @@ def conversation_bot(Conversation):
 
     return user_input_speech
 
+def clear_text():
+    st.session_state.my_text = st.session_state.input_text
+    st.session_state.input_text = ""
+
 def chatbot_text_interface(Conversation):
-    user_input_text = st.text_input("You: ", "", key="input_text")
+    st.text_input("You: ", "", key="input_text", on_change=clear_text)
+    user_input_text = st.session_state.get('my_text','')
 
     if user_input_text:
         st.write()
@@ -155,12 +160,13 @@ def chatbot_text_interface(Conversation):
         st.session_state.past.append(user_input_text)
         st.session_state.generated.append(output)
         img_link = st.session_state['user_data']['imgur_link']
-        print(img_link)
+        print(img_link)        
+
         vg.video_show(img_link,output)
         du.insert_conversation(st.session_state['user_data']['name'], user_input_text, output)  # Record conversation
         if "allow camera" in user_input_text.lower():
             du.update_user_data(camera_permission=True)
-            
+        
     # Display conversation in an expandable box with the latest messages first
     with st.expander("Display the conversation"):
         conversation_html = ""
