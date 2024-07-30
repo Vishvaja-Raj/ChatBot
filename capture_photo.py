@@ -27,7 +27,7 @@ def save_image(image, name):
     image_pil.save(file_path)
     st.success(f"Image saved as {file_path}")
 
-st.title("Capture and Save Image")
+st.title("Register Here")
 
 # Input field for the name of the person
 name = st.text_input("Enter the name (username) of the person:")

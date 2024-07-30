@@ -30,7 +30,18 @@ def compare_faces(known_face_encodings, known_face_names, unknown_image_path):
     
     if not unknown_face_encodings:
         st.warning("No faces found in the unknown image.")
-        return
+        text = st.text_input("Enter username")
+        password = st.text_input("Please enter your password:", type="password")
+        if text and password:
+            if du.check_user_credentials(text,password):
+                    st.success("Password correct! Access granted.")
+                    st.session_state.logged_in = True
+                    sleep(0.5)
+                    st.switch_page("pages/STEP1.py")
+            else:
+                st.error("Incorrect password. Access denied.")
+
+        return 
     
     for unknown_face_encoding in unknown_face_encodings:
         results = face_recognition.compare_faces(known_face_encodings, unknown_face_encoding)
@@ -52,6 +63,16 @@ def compare_faces(known_face_encodings, known_face_names, unknown_image_path):
                 state+=1
         if state>0:
             st.warning("Image not present in database")
+            text = st.text_input("Enter username")
+            password = st.text_input("Please enter your password:", type="password")
+            if text and password:
+                if du.check_user_credentials(text,password):
+                        st.success("Password correct! Access granted.")
+                        st.session_state.logged_in = True
+                        sleep(0.5)
+                        st.switch_page("pages/STEP1.py")
+                else:
+                    st.error("Incorrect password. Access denied.")
 
 
 
