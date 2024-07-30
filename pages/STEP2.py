@@ -9,26 +9,24 @@ from pathlib import Path
 import pyttsx3
 import speech_building as sb
 import companion_building as cb
-
 import video_generation as vg
 from utilities import make_sidebar
 
+# Setup sidebar and title
 make_sidebar()
+st.title("Choose any One")
 
-st.title("Upload an Image")
-image_url = cb.image_upload()
-print(image_url)
-st.session_state['user_data']['imgur_link'] = image_url
-vg.video_response(image_url,"Hello World")
-if st.button("Next"):
-    st.session_state.step = 'conversation'
-    du.update_user_data(
-                name=st.session_state['user_data']['name'],
-                bot_name = st.session_state['user_data']['bot_name'],
-                preferences=st.session_state['user_data']['preferences'],
-                imgur_link=st.session_state['user_data']['imgur_link']
-            )
-    print("USER DATA"+str(st.session_state['user_data']))
-    st.switch_page('pages/STEP3.py')
+# Define columns for layout
+col1, col2 = st.columns([1, 1])
 
+# Column 1: Upload Image
+with col1:
+    if st.button("Upload an Image"):
+        st.switch_page("pages/upload_image.py")
+        
+
+# Column 2: Create Avatar
+with col2:
+    if st.button("Generate an Avatar"):
+        st.switch_page("pages/avatar_generate.py")
 

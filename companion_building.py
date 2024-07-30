@@ -2,6 +2,8 @@ import streamlit as st
 import requests
 import base64
 import os
+import replicate
+from replicate.client import Client
 
 imgur_client_id = st.secrets["imgur_client_id"]  # Ensure you have this secret defined in Streamlit secrets
 
@@ -64,4 +66,17 @@ def image_upload():
     
     return image_url
 
+
+
+def create_avatar(text):
+    api_token =  st.secrets["replicate_api_key"] # Ensure this environment variable is correctly set
+    os.environ['REPLICATE_API_TOKEN'] = api_token
+    model_id = "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4"
+    input = {
+        "prompt": text,
+        "scheduler": "K_EULER",
+        "negative_prompt": "unsymmetrical facial feature, unsymmetrical eyes, unsymmetrical nose, disfigured, ugly, bad, immature, cartoon, anime, 3d, painting, black and white, painting, illustration, worst quality, low quality, picture frame, unrealistic"
+    }
+    output = replicate.run(model_id, input=input)
+    return output[0]
 
