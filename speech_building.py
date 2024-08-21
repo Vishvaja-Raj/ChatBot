@@ -171,6 +171,7 @@ def chatbot_text_interface():
             st.success(" Glad to see that smile.😊")
         elif sentiment == "Sad":
             st.error(output)
+            print(medical_classification)
             if medical_classification != "Medical":
                 st.error("Don't be Sad 😢.Good things will always come your way.")
         else:
