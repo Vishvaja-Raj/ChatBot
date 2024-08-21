@@ -1,11 +1,11 @@
 import pandas as pd
-from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, Trainer, TrainingArguments
 from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
-import torch
-import os
+import joblib
 
-# Load your CSV file
+# Step 1: Load and Preprocess the Data
 def load_data(file_path):
     df = pd.read_csv(file_path)
     return df['text'].tolist(), df['label'].tolist()
@@ -16,69 +16,30 @@ texts, labels = load_data(file_path)
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.3, random_state=42)
 
-# Initialize tokenizer and model
-tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
-model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=2)
+# Step 2: Initialize and Fit Vectorizer
+vectorizer = CountVectorizer()
+X_train_vectors = vectorizer.fit_transform(X_train)
+X_test_vectors = vectorizer.transform(X_test)
 
-# Tokenize the data
-def tokenize_function(texts):
-    return tokenizer(texts, padding='max_length', truncation=True, max_length=128, return_tensors='pt')
+# Train the Random Forest classifier
+classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+classifier.fit(X_train_vectors, y_train)
 
-train_encodings = tokenize_function(X_train)
-test_encodings = tokenize_function(X_test)
+# Evaluate the model
+y_pred = classifier.predict(X_test_vectors)
+accuracy = accuracy_score(y_test, y_pred)
+report = classification_report(y_test, y_pred, target_names=['Non-Medical', 'Medical'])
 
-class CustomDataset(torch.utils.data.Dataset):
-    def __init__(self, encodings, labels):
-        self.encodings = encodings
-        self.labels = labels
-
-    def __getitem__(self, idx):
-        item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
-        item['labels'] = torch.tensor(self.labels[idx])
-        return item
-
-    def __len__(self):
-        return len(self.labels)
-
-train_dataset = CustomDataset(train_encodings, y_train)
-test_dataset = CustomDataset(test_encodings, y_test)
-
-# Training arguments
-training_args = TrainingArguments(
-    output_dir='./results',
-    num_train_epochs=3,
-    per_device_train_batch_size=8,
-    per_device_eval_batch_size=8,
-    evaluation_strategy='epoch',
-    logging_dir='./logs',
-)
-
-# Trainer setup
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=train_dataset,
-    eval_dataset=test_dataset,
-    tokenizer=tokenizer
-)
-
-# Train and evaluate the model
-trainer.train()
-eval_results = trainer.evaluate()
-predictions = trainer.predict(test_dataset)
-pred_labels = torch.argmax(torch.tensor(predictions.predictions), dim=1).numpy()
-
-# Print evaluation results
-accuracy = accuracy_score(y_test, pred_labels)
-report = classification_report(y_test, pred_labels, target_names=['Non-Medical', 'Medical'])
 print(f"Accuracy: {accuracy}")
 print("Classification Report:")
 print(report)
 
-# Save the model and tokenizer
-save_directory = './saved_model'
-os.makedirs(save_directory, exist_ok=True)
-model.save_pretrained(save_directory)
-tokenizer.save_pretrained(save_directory)
-print("Model and tokenizer saved to", save_directory)
- 
+# Step 3: Save the Model and Vectorizer
+model_file = 'random_forest_model.pkl'
+vectorizer_file = 'count_vectorizer.pkl'
+
+joblib.dump(classifier, model_file)
+joblib.dump(vectorizer, vectorizer_file)
+
+print(f"Model saved as {model_file}")
+print(f"Vectorizer saved as {vectorizer_file}")

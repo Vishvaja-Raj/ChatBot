@@ -15,27 +15,23 @@ import video_generation as vg
 from audiorecorder import audiorecorder
 import preferences_set as ps
 import sentiment_analysis as sa
-from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
-import torch
+import joblib
+
+# Load the saved model and vectorizer
+model = joblib.load('random_forest_model.pkl')
+vectorizer = joblib.load('count_vectorizer.pkl')
+
+# Function to classify text
+def classify_text(text):
+    text_vector = vectorizer.transform([text])
+    prediction = model.predict(text_vector)
+    return 'Medical' if prediction[0] == 1 else 'Non-Medical'
 
 api_key = st.secrets["api_secret"]
 
 # Initialize pyttsx3 engine
 
 print("==")
-# Load the saved model and tokenizer
-load_directory = './saved_model'
-model = DistilBertForSequenceClassification.from_pretrained(load_directory)
-tokenizer = DistilBertTokenizer.from_pretrained(load_directory)
-
-# Function to classify text
-def classify_text(text):
-    inputs = tokenizer(text, padding='max_length', truncation=True, max_length=128, return_tensors='pt')
-    with torch.no_grad():
-        outputs = model(**inputs)
-    prediction = torch.argmax(outputs.logits, dim=1).item()
-    return 'Medical' if prediction == 1 else 'Non-Medical'
-
 def text_to_speech(text):
     engine = pyttsx3.init()
     engine.say(text)
@@ -175,7 +171,8 @@ def chatbot_text_interface():
             st.success(" Glad to see that smile.😊")
         elif sentiment == "Sad":
             st.error(output)
-            st.error("Don't be Sad 😢.Good things will always come your way.")
+            if medical_classification != "Medical":
+                st.error("Don't be Sad 😢.Good things will always come your way.")
         else:
             st.info(output)
             st.info("The sentiment of the text is Neutral 😐")
