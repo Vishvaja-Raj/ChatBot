@@ -42,9 +42,12 @@ st.title("Emergency Alert System")
 
 st.write("Click the button below to send an emergency message or make a phone call.")
 
-if st.button("Send Emergency Alert"):
+if st.button("Send Emergency Alert Message "):
     # Uncomment the function you want to use
     # result = send_emergency_message()
     result = send_emergency_message()
-
+if st.button("Send Emergency Call"):
+    # Uncomment the function you want to use
+    # result = send_emergency_message()
+    result = make_emergency_call()
     st.success(result)
