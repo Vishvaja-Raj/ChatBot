@@ -1,7 +1,15 @@
 import streamlit as st
-from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
-import torch
+import joblib
 
+# Load the saved model and vectorizer
+model = joblib.load('model_files/medical_model.pkl')
+vectorizer = joblib.load('model_files/vectorizer.pkl')
+
+# Function to classify text
+def classify_text(text):
+    text_vector = vectorizer.transform([text])
+    prediction = model.predict(text_vector)
+    return 'Medical' if prediction[0] == 1 else 'Non-Medical'
 
 # Streamlit app
 def main():
