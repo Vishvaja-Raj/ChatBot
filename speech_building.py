@@ -18,8 +18,8 @@ import sentiment_analysis as sa
 import joblib
 
 # Load the saved model and vectorizer
-model = joblib.load('random_forest_model.pkl')
-vectorizer = joblib.load('count_vectorizer.pkl')
+model = joblib.load('model_files/medical_model.pkl')
+vectorizer = joblib.load('model_files/vectorizer.pkl')
 
 # Function to classify text
 def classify_text(text):
