@@ -22,10 +22,10 @@ def third_step():
 
     if 'generated' not in st.session_state:
         st.session_state.generated = []
-    Conversation = sb.load_conversation()
+    #Conversation = sb.load_conversation()
 # Load conversation chain
     #sb.conversation_bot(Conversation)
-    sb.chatbot_text_interface(Conversation)
+    sb.chatbot_text_interface()
     
     
     if st.session_state.show_past:
@@ -37,7 +37,7 @@ def third_step():
 
 def step3():
     if st.session_state.step == 'conversation':
-            du.initialize_session_state_from_db()
+            du.initialize_session_state_from_db(st.session_state['user_data']['name'])
             print("User Data is"+ str(st.session_state['user_data']))
             st.title("Chat with the AI Assistant")
             third_step()

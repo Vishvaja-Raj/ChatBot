@@ -3,7 +3,9 @@ from firebase_admin import credentials, firestore
 import json
 import streamlit as st
 import sys
+import database_updates as du
 import os
+import utilities as u
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Global variable for Firestore database client
 db = None
@@ -31,12 +33,16 @@ def init_db():
 
 # Function to initialize user data in session state if not already initialized
 def init_user_data():
-    if 'user_data' not in st.session_state:
-        st.session_state['user_data'] = {
-            'name': '',
-            'bot_name': '',
-            'preferences': '',
-            'camera_permission': False,
-            'imgur_link': ''
-        }
+    if 'username' not in st.session_state:
+        u.logout()
+    if du.initialize_session_state_from_db(st.session_state.username) is None:
+
+        if 'user_data' not in st.session_state:
+            st.session_state['user_data'] = {
+                'name': '',
+                'bot_name': '',
+                'preferences': '',
+                'camera_permission': False,
+                'imgur_link': ''
+            }
 

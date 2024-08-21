@@ -38,10 +38,10 @@ def make_sidebar():
         if st.session_state.get("logged_in", True):
 
             st.page_link("pages/STEP1.py", label="Enter your details", icon="🏠")
-            st.page_link("pages/STEP2.py", label="Create Me", icon="🧑‍🍳")
+            st.page_link("pages/STEP2.py", label="Create Me", icon="🧑")
             st.page_link("pages/STEP3.py", label="Chat With Me", icon="🤖")
             st.page_link("pages/STEP4.py", label="Click a Photo", icon="🕵️")
-
+            st.page_link("pages/STEP5.py", label="Emergency Alert", icon="🆘")
             st.write("")
             st.write("")
 

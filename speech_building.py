@@ -13,12 +13,28 @@ from langchain.llms import OpenAI
 import database_updates as du
 import video_generation as vg
 from audiorecorder import audiorecorder
+import preferences_set as ps
+import sentiment_analysis as sa
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
+import torch
 
 api_key = st.secrets["api_secret"]
 
 # Initialize pyttsx3 engine
 
 print("==")
+# Load the saved model and tokenizer
+load_directory = './saved_model'
+model = DistilBertForSequenceClassification.from_pretrained(load_directory)
+tokenizer = DistilBertTokenizer.from_pretrained(load_directory)
+
+# Function to classify text
+def classify_text(text):
+    inputs = tokenizer(text, padding='max_length', truncation=True, max_length=128, return_tensors='pt')
+    with torch.no_grad():
+        outputs = model(**inputs)
+    prediction = torch.argmax(outputs.logits, dim=1).item()
+    return 'Medical' if prediction == 1 else 'Non-Medical'
 
 def text_to_speech(text):
     engine = pyttsx3.init()
@@ -63,7 +79,7 @@ def load_conversation():
             model="gpt-3.5-turbo-instruct"
         )
         if 'entity_memory' not in st.session_state:
-            st.session_state.entity_memory = ConversationEntityMemory(llm=llm, k=10)
+            st.session_state.entity_memory = ConversationEntityMemory(llm=llm)
 
             # Fetch conversation history and load into entity memory
             conversation_history = du.get_conversation_history(st.session_state['user_data']['name'])
@@ -71,6 +87,7 @@ def load_conversation():
                 st.session_state.entity_memory.save_context({"input": message}, {"output": response})
                 st.session_state.past.append(message)
                 st.session_state.generated.append(response)
+            print(st.session_state.entity_memory)    
 
             # Restore user data if available
             if 'name' in st.session_state['user_data'] and st.session_state['user_data']['name']:
@@ -80,9 +97,6 @@ def load_conversation():
 
             if 'preferences' in st.session_state['user_data'] and st.session_state['user_data']['preferences']:
                 st.session_state.entity_memory.save_context({"input": "My preferences are " + st.session_state['user_data']['preferences']}, {"output": "I'll remember that you like " + st.session_state['user_data']['preferences']})
-
-            if st.session_state['user_data']['camera_permission']:
-                st.session_state.entity_memory.save_context({"input": "Allow camera"}, {"output": "I can access your camera."})
 
         Conversation = ConversationChain(
             llm=llm,
@@ -94,78 +108,78 @@ def load_conversation():
         st.stop()
     return Conversation
 
-def conversation_bot(Conversation):
-    # Initialize the variable to avoid UnboundLocalError
-    user_input_speech = ""
 
-    # Speech-to-Text Input with output on the left and button on the right
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.info("Click the microphone button and start speaking...")
-        if st.button("Start Recording"):
-            user_input_speech = speech_to_text()
-            if user_input_speech:
-                st.text_area("You", value=user_input_speech, key='input_text_speech', height=100, max_chars=None, help="Your AI Assistant here! Ask me anything ...")
-                # Automatically run conversation with the speech input
-                output = Conversation.run(input=user_input_speech)
-                st.session_state.past.append(user_input_speech)
-                st.session_state.generated.append(output)
-                du.insert_conversation(st.session_state['user_data']['name'], user_input_speech, output)  # Record conversation
+# def conversation_bot(Conversation):
+#     # Initialize the variable to avoid UnboundLocalError
+#     user_input_speech = ""
 
-                # Update user data based on conversation context
-                if "my name is" in user_input_speech.lower() and len(user_input_speech.split()) > 3:
-                    name = user_input_speech.split("my name is")[1].strip()
-                    du.update_user_data(name=name)
-                if "your name is" in user_input_speech.lower() and len(user_input_speech.split()) > 3:
-                    bot_name = user_input_speech.split("your name is")[1].strip()
-                    du.update_user_data(bot_name=bot_name)
+#     # Speech-to-Text Input with output on the left and button on the right
+#     col1, col2 = st.columns([2, 1])
+#     with col1:
+#         st.info("Click the microphone button and start speaking...")
+#         if st.button("Start Recording"):
+#             user_input_speech = speech_to_text()
+#             if user_input_speech:
+#                 st.text_area("You", value=user_input_speech, key='input_text_speech', height=100, max_chars=None, help="Your AI Assistant here! Ask me anything ...")
+#                 # Automatically run conversation with the speech input
+#                 output = Conversation.run(input=user_input_speech)
+#                 st.session_state.past.append(user_input_speech)
+#                 st.session_state.generated.append(output)
+#                 du.insert_conversation(st.session_state['user_data']['name'], user_input_speech, output)  # Record conversation
+#                 # tts = gTTS(output)
+#                 # tts.save("output.mp3")
+#                 # time.sleep(5)
+#                 # audio_file = AudioSegment.from_file('output.mp3')
 
-                if "i like" in user_input_speech.lower():
-                    split_input = user_input_speech.lower().split("i like")
-                    if len(split_input) > 1:
-                        preferences = split_input[1].strip()
-                        du.update_user_data(preferences=preferences)
-                else:
-                    st.warning("Sorry, I could not understand your preferences.")
-
-                if "allow camera" in user_input_speech.lower():
-                    du.update_user_data(camera_permission=True)
-                
-                                # Use gtts to voice out the last conversation
-                tts = gTTS(output)
-                tts.save("output.mp3")
-                time.sleep(5)
-                audio_file = AudioSegment.from_file('output.mp3')
-
-                # Play the audio
-                play(audio_file)
-                os.remove("output.mp3")
-                st.experimental_rerun() 
+#                 # # Play the audio
+#                 # play(audio_file)
+#                 # os.remove("output.mp3")
+#                 st.experimental_rerun() 
 
 
-    return user_input_speech
+#     return user_input_speech
 
 def clear_text():
     st.session_state.my_text = st.session_state.input_text
     st.session_state.input_text = ""
 
-def chatbot_text_interface(Conversation):
+def chatbot_text_interface():
+    Conversation = load_conversation()
     st.text_input("You: ", "", key="input_text", on_change=clear_text)
     user_input_text = st.session_state.get('my_text','')
 
     if user_input_text:
+        sentiment = sa.analyze_sentiment(user_input_text)
+
         st.write()
         # Run conversation with the text input
         output = Conversation.run(input=user_input_text)
         st.session_state.past.append(user_input_text)
         st.session_state.generated.append(output)
         img_link = st.session_state['user_data']['imgur_link']
-        print(img_link)        
-
-        vg.video_show(img_link,output)
+        if img_link is None:
+            du.initialize_session_state_from_db()
+            img_link = st.session_state['user_data']['imgur_link']
+            if img_link is None:
+                st.warning("Create your chat bot first")
+        
+        if img_link:       
+            vg.video_show(img_link,output)
         du.insert_conversation(st.session_state['user_data']['name'], user_input_text, output)  # Record conversation
-        if "allow camera" in user_input_text.lower():
-            du.update_user_data(camera_permission=True)
+        # Display the sentiment
+        medical_classification = classify_text(user_input_text)
+        if medical_classification == "Medical":
+            du.insert_medical_history(user_input_text,st.session_state["username"])
+        if sentiment == "Happy":
+            st.success(output)
+            st.success(" Glad to see that smile.😊")
+        elif sentiment == "Sad":
+            st.error(output)
+            st.error("Don't be Sad 😢.Good things will always come your way.")
+        else:
+            st.info(output)
+            st.info("The sentiment of the text is Neutral 😐")
+
         
     # Display conversation in an expandable box with the latest messages first
     with st.expander("Display the conversation"):

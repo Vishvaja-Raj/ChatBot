@@ -36,6 +36,7 @@ def compare_faces(known_face_encodings, known_face_names, unknown_image_path):
             if du.check_user_credentials(text,password):
                     st.success("Password correct! Access granted.")
                     st.session_state.logged_in = True
+                    st.session_state.username = text
                     sleep(0.5)
                     st.switch_page("pages/STEP1.py")
             else:
@@ -54,6 +55,7 @@ def compare_faces(known_face_encodings, known_face_names, unknown_image_path):
                     if du.check_user_credentials(known_face_names[i],password):
                         st.success("Password correct! Access granted.")
                         st.session_state.logged_in = True
+                        st.session_state.username = known_face_names[i]
                         sleep(0.5)
                         st.switch_page("pages/STEP1.py")
                     else:
@@ -69,6 +71,7 @@ def compare_faces(known_face_encodings, known_face_names, unknown_image_path):
                 if du.check_user_credentials(text,password):
                         st.success("Password correct! Access granted.")
                         st.session_state.logged_in = True
+                        st.session_state.username = text
                         sleep(0.5)
                         st.switch_page("pages/STEP1.py")
                 else:

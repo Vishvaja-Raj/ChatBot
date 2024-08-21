@@ -1,6 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
 import streamlit as st
+
 import json
 import db_init as di
 from datetime import datetime
@@ -31,6 +32,22 @@ def insert_conversation(name, message, response):
         'response': response,
         'timestamp': datetime.utcnow()  # Add a timestamp
     })
+
+def insert_medical_history(message, username, timestamp=None):
+    if timestamp is None:
+        timestamp = datetime.utcnow()
+
+    try:
+        # Create a new document in the 'medical_history' collection
+        doc_ref = db.collection('medical_history').add({
+            'message': message,
+            'username': username,
+            'timestamp': timestamp  # Firestore will automatically handle the datetime object
+        })
+
+        print(f"Document written with ID: {doc_ref.id}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def create_user(name, password):
     """
@@ -106,10 +123,13 @@ def update_user_data(name,bot_name, preferences, imgur_link, camera_permission=N
     doc_ref.set(user_data, merge=True)
 
 # Function to fetch user data from Firestore
-def get_user_data():
-    print("Fetching User Data")
+# Function to fetch user data from Firestore based on username
+def get_user_data(username):
+    print(f"Fetching User Data for: {username}")
     try:
-        user_ref = db.collection('memory').order_by('timestamp', direction=firestore.Query.DESCENDING).limit(1).stream()
+        # Query Firestore to find the user data based on the given username
+        user_ref = db.collection('memory').where('name', '==', username).order_by('timestamp', direction=firestore.Query.DESCENDING).limit(1).stream()
+        
         for user in user_ref:
             user_data = user.to_dict()
             print("User Data Retrieved: " + str(user_data))
@@ -120,17 +140,20 @@ def get_user_data():
                 'camera_permission': user_data.get('camera_permission', False),
                 'imgur_link': user_data.get('imgur_link', '')
             }
-        print("No user data found.")
+        
+        print("No user data found for the given username.")
         return None
+    
     except Exception as e:
         print(f"Error fetching user data: {e}")
         return None
 
 
+
 # Function to initialize session state from Firestore
-def initialize_session_state_from_db():
+def initialize_session_state_from_db(username):
     print("User 1")
-    user_data = get_user_data()
+    user_data = get_user_data(username)
     if user_data:
         st.session_state['user_data'] = user_data
 

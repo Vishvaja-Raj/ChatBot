@@ -109,7 +109,6 @@ pyOpenSSL==24.1.0
 pytest==8.2.2
 python-dateutil==2.9.0.post0
 playsound
-pyalsaaudio
 pyaudio
 pytz==2024.1
 PyYAML==6.0.1
@@ -163,3 +162,9 @@ cmake
 dlib-bin
 face_recognition @ git+https://github.com/thetoby9944/face_recognition
 replicate
+scikit-learn
+tensorflow==2.17.0
+tf-keras
+twilio
+accelerate -U
+transformers[torch]
